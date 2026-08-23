@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:video_tagging}",
+            "name": "Debug VideoTagging",
+            "target": "VideoTagging",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug VideoTagging"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:video_tagging}",
+            "name": "Release VideoTagging",
+            "target": "VideoTagging",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release VideoTagging"
+        }
+    ]
+}
