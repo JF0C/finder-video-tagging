@@ -10,14 +10,14 @@ enum ManagedTag: String, CaseIterable {
 
     var finderColor: Int {
         switch self {
-        case .new: 2
+        case .new: 4
         case .watching: 5
-        case .viewed: 6
+        case .viewed: 0
         }
     }
 
     var finderTagEntry: String {
-        "\(rawValue)\n\(finderColor)"
+        finderColor == 0 ? rawValue : "\(rawValue)\n\(finderColor)"
     }
 }
 
@@ -63,7 +63,7 @@ struct Configuration: Codable {
 }
 
 final class TagManager: @unchecked Sendable {
-    private let conflictingColorTagNames: Set<String> = ["Grün", "Gelb", "Green", "Yellow"]
+    private let conflictingColorTagNames: Set<String> = ["Blau", "Grün", "Gelb", "Green", "Yellow"]
 
     func apply(_ managedTag: ManagedTag, to url: URL, onlyIfUnmanaged: Bool = false) {
         guard isSupportedMedia(url), FileManager.default.fileExists(atPath: url.path) else {
