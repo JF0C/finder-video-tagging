@@ -9,8 +9,14 @@ let package = Package(
             name: "VideoTagging",
             linkerSettings: [
                 .linkedFramework("CoreServices"),
+                .linkedFramework("AppKit"),
+            ]
+        ),
+        .executableTarget(
+            name: "FolderPicker",
+            linkerSettings: [
                 .linkedFramework("AppKit")
             ]
-        )
+        ),
     ]
 )

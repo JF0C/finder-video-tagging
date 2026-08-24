@@ -18,7 +18,7 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-Setup detects the current macOS user and starts with Downloads and Movies selected. Choose Manage Folders, then Edit Selected Folders to view the selected locations; deselect a folder to remove it. Choose Add Folders to browse for more locations. It writes the selected paths to `~/Library/Application Support/VideoTagging/config.json`, builds the executable, and installs a per-user LaunchAgent.
+Setup detects the current macOS user and starts with Downloads and Movies selected. The installer shows the selected locations in a list. Use the plus button to add folders and select a folder to enable the minus button, which removes it. It writes the selected paths to `~/Library/Application Support/VideoTagging/config.json`, builds the executable, and installs a per-user LaunchAgent.
 
 Rerun `./setup.sh` to change the observed folders. The LaunchAgent starts automatically when you log in after boot and restarts the service if it exits. Logs are written to `~/Library/Logs/video-tagging.log` and `~/Library/Logs/video-tagging-error.log`.
 

@@ -16,38 +16,7 @@ config_directory="$home_directory/Library/Application Support/VideoTagging"
 config_file="$config_directory/config.json"
 agent_file="$home_directory/Library/LaunchAgents/$label.plist"
 
-selected=$(osascript <<'APPLESCRIPT'
-set observedFolders to {POSIX path of (path to downloads folder), POSIX path of (path to movies folder)}
-
-repeat
-    set action to button returned of (display dialog "Choose folders for automatic video tagging." buttons {"Cancel", "Manage Folders...", "Continue"} default button "Continue" cancel button "Cancel")
-
-    if action is "Continue" then
-        if (count of observedFolders) is 0 then
-            display alert "Choose at least one folder." as warning
-        else
-            exit repeat
-        end if
-    else if action is "Manage Folders..." then
-        set managementAction to button returned of (display dialog "Manage watched folders." buttons {"Back", "Edit Selected Folders...", "Add Folders..."} default button "Back")
-
-        if managementAction is "Add Folders..." then
-            set addedFolders to choose folder with prompt "Add folders to watch:" with multiple selections allowed
-            repeat with addedFolder in addedFolders
-                set folderPath to POSIX path of addedFolder
-                if folderPath is not in observedFolders then set end of observedFolders to folderPath
-            end repeat
-        else if managementAction is "Edit Selected Folders..." then
-            set retainedFolders to choose from list observedFolders with prompt "Selected folders. Deselect folders to stop watching:" default items observedFolders with multiple selections allowed OK button name "Save Selection" cancel button name "Back"
-            if retainedFolders is not false then set observedFolders to retainedFolders
-        end if
-    end if
-end repeat
-
-set AppleScript's text item delimiters to linefeed
-return observedFolders as text
-APPLESCRIPT
-)
+selected=$(swift run -c release --package-path "$project_dir" FolderPicker)
 
 folders=("${(@f)selected}")
 
