@@ -12,7 +12,7 @@ enum ManagedTag: String, CaseIterable {
         switch self {
         case .new: 4
         case .watching: 5
-        case .viewed: 0
+        case .viewed: 1
         }
     }
 
@@ -77,6 +77,7 @@ final class TagManager: @unchecked Sendable {
             }
 
             if onlyIfUnmanaged && hasManagedTag {
+                removeConflictingColorTags(from: existingEntries, url: url)
                 return
             }
 
@@ -84,12 +85,12 @@ final class TagManager: @unchecked Sendable {
                 existingEntries.filter {
                     let tagName = finderTagName(from: $0)
                     return ManagedTag(rawValue: tagName) == nil
+                        && !conflictingColorTagNames.contains(tagName)
                 } + [managedTag.finderTagEntry]
             if Set(updatedTags) != Set(existingEntries) {
                 try writeFinderTags(updatedTags, to: url)
                 print("Tagged \(url.path) as \(managedTag.rawValue)")
             }
-            removeConflictingColorTags(from: url)
         } catch {
             fputs("Could not tag \(url.path): \(error)\n", stderr)
         }
@@ -129,25 +130,19 @@ final class TagManager: @unchecked Sendable {
         return String(entry[..<separator])
     }
 
-    private func removeConflictingColorTags(from url: URL) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self, FileManager.default.fileExists(atPath: url.path) else {
-                return
-            }
+    private func removeConflictingColorTags(from entries: [String], url: URL) {
+        let updatedEntries = entries.filter {
+            !conflictingColorTagNames.contains(finderTagName(from: $0))
+        }
+        guard Set(updatedEntries) != Set(entries) else {
+            return
+        }
 
-            do {
-                let existingEntries = try self.readFinderTagEntries(from: url)
-                let updatedEntries = existingEntries.filter {
-                    !self.conflictingColorTagNames.contains(self.finderTagName(from: $0))
-                }
-                guard Set(updatedEntries) != Set(existingEntries) else {
-                    return
-                }
-                try self.writeFinderTags(updatedEntries, to: url)
-                print("Removed conflicting color tags from \(url.path)")
-            } catch {
-                fputs("Could not clean up tags for \(url.path): \(error)\n", stderr)
-            }
+        do {
+            try writeFinderTags(updatedEntries, to: url)
+            print("Removed conflicting color tags from \(url.path)")
+        } catch {
+            fputs("Could not clean up tags for \(url.path): \(error)\n", stderr)
         }
     }
 
