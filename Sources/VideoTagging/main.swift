@@ -26,8 +26,10 @@ struct PlaybackItem {
 
 struct Configuration: Codable {
     let observedFolders: [String]
+    let viewedAtPercentage: Double?
+    let viewedSecondsBeforeEnd: Double?
 
-    static func load() -> [URL] {
+    static func load() -> Configuration {
         let homeDirectory = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         let configURL =
             homeDirectory
@@ -39,7 +41,14 @@ struct Configuration: Codable {
         guard let data = try? Data(contentsOf: configURL),
             let configuration = try? JSONDecoder().decode(Configuration.self, from: data)
         else {
-            return defaultFolders.filter { FileManager.default.fileExists(atPath: $0.path) }
+            return Configuration(
+                observedFolders: defaultFolders.filter {
+                    FileManager.default.fileExists(atPath: $0.path)
+                }
+                .map(\.path),
+                viewedAtPercentage: 85,
+                viewedSecondsBeforeEnd: nil
+            )
         }
 
         let folders = configuration.observedFolders.map {
@@ -52,18 +61,36 @@ struct Configuration: Codable {
 
         if uniqueFolders.isEmpty {
             fputs("No configured observed folders exist; using Downloads and Movies.\n", stderr)
-            return defaultFolders.filter { FileManager.default.fileExists(atPath: $0.path) }
+            return Configuration(
+                observedFolders: defaultFolders.filter {
+                    FileManager.default.fileExists(atPath: $0.path)
+                }
+                .map(\.path),
+                viewedAtPercentage: configuration.viewedAtPercentage ?? 85,
+                viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+            )
         }
 
-        return uniqueFolders
+        return Configuration(
+            observedFolders: uniqueFolders.map(\.path),
+            viewedAtPercentage: configuration.viewedAtPercentage ?? 85,
+            viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+        )
     }
 }
 
-let observedFolders = Configuration.load()
+let configuration = Configuration.load()
+let observedFolders = configuration.observedFolders.map {
+    URL(fileURLWithPath: $0, isDirectory: true).standardizedFileURL
+}
 let tagManager = TagManager()
 let watcher = FolderWatcher(roots: observedFolders, tagManager: tagManager)
 nonisolated(unsafe) let playerMonitor = PlayerMonitor(
-    tagManager: tagManager, roots: observedFolders)
+    tagManager: tagManager,
+    roots: observedFolders,
+    viewedAtPercentage: configuration.viewedAtPercentage,
+    viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+)
 
 watcher.start()
 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in

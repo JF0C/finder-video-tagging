@@ -16,26 +16,16 @@ config_directory="$home_directory/Library/Application Support/VideoTagging"
 config_file="$config_directory/config.json"
 agent_file="$home_directory/Library/LaunchAgents/$label.plist"
 
-selected=$(swift run -c release --package-path "$project_dir" FolderPicker)
+configuration=$(swift run -c release --package-path "$project_dir" FolderPicker)
 
-folders=("${(@f)selected}")
-
-if (( ${#folders[@]} == 0 )); then
-    print -u2 "Select at least one folder. Setup cancelled."
+if [[ -z "$configuration" ]]; then
+    print -u2 "Setup cancelled."
     exit 1
 fi
 
 mkdir -p "$config_directory" "$home_directory/Library/LaunchAgents"
 
-folders_json="["
-for folder in "${folders[@]}"; do
-    escaped_folder=${folder//\\/\\\\}
-    escaped_folder=${escaped_folder//\"/\\\"}
-    [[ "$folders_json" != "[" ]] && folders_json+=", "
-    folders_json+="\"$escaped_folder\""
-done
-folders_json+="]"
-printf '{\n  "observedFolders": %s\n}\n' "$folders_json" > "$config_file"
+print -r -- "$configuration" > "$config_file"
 
 swift build -c release --package-path "$project_dir"
 
@@ -66,4 +56,4 @@ launchctl bootout "gui/$(id -u)/$legacy_label" 2>/dev/null || true
 launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$agent_file"
 
-print "Video Tagging is configured for: ${folders[*]}"
+print "Video Tagging setup is complete."

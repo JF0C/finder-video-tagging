@@ -4,10 +4,19 @@ import Foundation
 final class PlayerMonitor {
     private let tagManager: TagManager
     private let roots: [URL]
+    private let viewedAtPercentage: Double?
+    private let viewedSecondsBeforeEnd: Double?
 
-    init(tagManager: TagManager, roots: [URL]) {
+    init(
+        tagManager: TagManager,
+        roots: [URL],
+        viewedAtPercentage: Double?,
+        viewedSecondsBeforeEnd: Double?
+    ) {
         self.tagManager = tagManager
         self.roots = roots.map(\.standardizedFileURL)
+        self.viewedAtPercentage = viewedAtPercentage
+        self.viewedSecondsBeforeEnd = viewedSecondsBeforeEnd
     }
 
     func poll() {
@@ -19,8 +28,14 @@ final class PlayerMonitor {
                 return
             }
 
-            let progress = item.currentTime / item.duration
-            tagManager.apply(progress >= 0.85 ? .viewed : .watching, to: item.url)
+            let isViewed =
+                (viewedAtPercentage.map {
+                    item.currentTime / item.duration >= $0 / 100
+                } ?? false)
+                || (viewedSecondsBeforeEnd.map {
+                    item.duration - item.currentTime <= $0
+                } ?? false)
+            tagManager.apply(isViewed ? .viewed : .watching, to: item.url)
         }
     }
 

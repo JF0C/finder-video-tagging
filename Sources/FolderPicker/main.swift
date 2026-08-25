@@ -11,8 +11,15 @@ NSApplication.shared.setActivationPolicy(.accessory)
 NSApplication.shared.activate(ignoringOtherApps: true)
 
 let folderPicker = FolderPickerController(folders: initialFolders)
-guard let folders = folderPicker.chooseFolders() else {
+guard let configuration = folderPicker.chooseConfiguration() else {
     exit(1)
 }
 
-print(folders.map(\.path).joined(separator: "\n"))
+let encoder = JSONEncoder()
+encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+guard let data = try? encoder.encode(configuration),
+    let output = String(data: data, encoding: .utf8)
+else {
+    exit(1)
+}
+print(output)
