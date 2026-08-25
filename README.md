@@ -2,12 +2,9 @@
 
 This macOS service assigns Finder tags to `.mkv`, `.mp4`, `.mov`, and `.m4v` files.
 
-- New supported files created in or moved into `/Users/jan/Downloads` or `/Users/jan/Movies` are tagged `New` after their size remains unchanged for two seconds, but only if none of `New`, `Watching`, or `Viewed` is already assigned. Folders moved into either location are scanned recursively.
-- Only files within the observed Downloads and Movies folders can receive playback state tags. Files actively played in VLC or QuickTime Player are tagged `Watching` until playback reaches 85%.
-- Files at 85% or more of their duration are tagged `Viewed`. This is based on the current playback position, so seeking to 85% also marks a file `Viewed`; cumulative watch time is not tracked.
-- State transitions remove the prior state tag: `New` to `Watching` or `Viewed`, `Watching` to `Viewed`, and `Viewed` to `Watching` when replay begins below the 85% threshold.
-- Managed tags include Finder colors: `New` is blue, `Watching` is yellow, and `Viewed` is gray.
-- Any unrelated named Finder tags are preserved. Every managed state update removes the German and English blue/green/yellow/gray color-name tags (`Blau`, `Grün`, `Gelb`, `Grau`, `Green`, `Yellow`, `Gray`) and clears Finder's legacy single-color label flag to prevent duplicate state indicators.
+- New files added to an observed folder are tagged `New` after their size is stable for two seconds. Moved folders are scanned recursively.
+- Videos playing in VLC or QuickTime Player are tagged `Watching`, then `Viewed` at 85% progress. Seeking also changes the tag; cumulative watch time is not tracked.
+- `New`, `Watching`, and `Viewed` replace one another and use Finder blue, yellow, and gray colors. Unrelated Finder tags are preserved.
 
 ## Setup
 
@@ -18,11 +15,11 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-Setup detects the current macOS user and starts with Downloads and Movies selected. The installer shows the selected locations in a list. Use the plus button to add folders and select a folder to enable the minus button, which removes it. It writes the selected paths to `~/Library/Application Support/VideoTagging/config.json`, builds the executable, and installs a per-user LaunchAgent.
+Setup starts with Downloads and Movies selected. Add or remove observed folders in the picker, then continue. It writes the selected paths to `~/Library/Application Support/VideoTagging/config.json`, builds the executable, and installs a per-user LaunchAgent.
 
-Rerun `./setup.sh` to change the observed folders. The LaunchAgent starts automatically when you log in after boot and restarts the service if it exits. Logs are written to `~/Library/Logs/video-tagging.log` and `~/Library/Logs/video-tagging-error.log`.
+Rerun `./setup.sh` to change observed folders or apply changes made to the source code. It rebuilds and reloads the service. The service starts at login, restarts if it exits, and logs to `~/Library/Logs/video-tagging.log` and `~/Library/Logs/video-tagging-error.log`.
 
-On its first playback check, macOS requests Automation permission to control VLC and QuickTime Player. Approve both in System Settings > Privacy & Security > Automation.
+macOS requests Automation permission for VLC and QuickTime Player on the first playback check. Approve it in System Settings > Privacy & Security > Automation.
 
 ## Uninstall
 
@@ -33,4 +30,4 @@ chmod +x uninstall.sh
 ./uninstall.sh
 ```
 
-This stops and removes the current and legacy LaunchAgents, configuration, and service logs. It leaves this repository and its build artifacts in place.
+This removes the LaunchAgent, configuration, and logs, but leaves the repository and build artifacts.
