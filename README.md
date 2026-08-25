@@ -7,7 +7,7 @@ This macOS service assigns Finder tags to `.mkv`, `.mp4`, `.mov`, and `.m4v` fil
 - Files at 85% or more of their duration are tagged `Viewed`. This is based on the current playback position, so seeking to 85% also marks a file `Viewed`; cumulative watch time is not tracked.
 - State transitions remove the prior state tag: `New` to `Watching` or `Viewed`, `Watching` to `Viewed`, and `Viewed` to `Watching` when replay begins below the 85% threshold.
 - Managed tags include Finder colors: `New` is blue, `Watching` is yellow, and `Viewed` is gray.
-- Any unrelated Finder tags, including their colors, are preserved. Every managed state update removes the German and English blue/green/yellow color-name tags (`Blau`, `Grün`, `Gelb`, `Green`, `Yellow`) in the same metadata update to prevent duplicate state indicators.
+- Any unrelated named Finder tags are preserved. Every managed state update removes the German and English blue/green/yellow/gray color-name tags (`Blau`, `Grün`, `Gelb`, `Grau`, `Green`, `Yellow`, `Gray`) and clears Finder's legacy single-color label flag to prevent duplicate state indicators.
 
 ## Setup
 
