@@ -4,7 +4,7 @@ set -euo pipefail
 project_dir="${0:A:h}"
 label="com.video-tagging"
 legacy_label="com.jan.video-tagging"
-console_user=$(stat -f %Su /dev/console)
+console_user=$(/usr/bin/stat -f %Su /dev/console)
 
 if [[ "$console_user" == "root" || "$console_user" != "$(id -un)" ]]; then
     print -u2 "Run setup from the logged-in macOS user account."
