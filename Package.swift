@@ -5,8 +5,8 @@ let package = Package(
     name: "VideoTagging",
     platforms: [.macOS(.v15)],
     targets: [
-        .executableTarget(
-            name: "VideoTagging",
+        .target(
+            name: "VideoTaggingCore",
             linkerSettings: [
                 .linkedFramework("CoreServices"),
                 .linkedFramework("CoreAudio"),
@@ -14,11 +14,25 @@ let package = Package(
             ]
         ),
         .executableTarget(
+            name: "VideoTagging",
+            dependencies: ["VideoTaggingCore"]
+        ),
+        .target(
+            name: "FolderPickerCore",
+            dependencies: ["VideoTaggingCore"],
+            linkerSettings: [.linkedFramework("AppKit")]
+        ),
+        .executableTarget(
             name: "FolderPicker",
-            linkerSettings: [
-                .linkedFramework("CoreAudio"),
-                .linkedFramework("AppKit"),
-            ]
+            dependencies: ["FolderPickerCore"]
+        ),
+        .testTarget(
+            name: "VideoTaggingCoreTests",
+            dependencies: ["VideoTaggingCore"]
+        ),
+        .testTarget(
+            name: "FolderPickerCoreTests",
+            dependencies: ["FolderPickerCore", "VideoTaggingCore"]
         ),
     ]
 )

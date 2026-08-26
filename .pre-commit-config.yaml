@@ -1,0 +1,33 @@
+minimum_pre_commit_version: "3.5.0"
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: local
+    hooks:
+      - id: swift-file-lengths
+        name: Check Swift file lengths
+        entry: Scripts/check-file-lengths.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: swift-format
+        name: Lint Swift formatting
+        entry: swift format lint --recursive --strict Sources Tests Scripts/CoverageGuard.swift Package.swift
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: coverage-guard-contracts
+        name: Test coverage guard
+        entry: Scripts/test-coverage-guard.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: swift-coverage
+        name: Test and enforce Swift coverage
+        entry: Scripts/check-coverage.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
