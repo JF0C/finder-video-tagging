@@ -1,4 +1,5 @@
 import AppKit
+import FolderPickerCore
 import Foundation
 
 let fileManager = FileManager.default

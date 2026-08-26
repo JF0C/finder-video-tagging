@@ -1,0 +1,24 @@
+{
+  "indentation" : {
+    "spaces" : 4
+  },
+  "lineLength" : 100,
+  "maximumBlankLines" : 1,
+  "multiElementCollectionTrailingCommas" : true,
+  "respectsExistingLineBreaks" : true,
+  "rules" : {
+    "AllPublicDeclarationsHaveDocumentation" : false,
+    "AlwaysUseLowerCamelCase" : true,
+    "DoNotUseSemicolons" : true,
+    "GroupNumericLiterals" : true,
+    "IdentifiersMustBeASCII" : true,
+    "NeverForceUnwrap" : false,
+    "NoBlockComments" : true,
+    "OneCasePerLine" : true,
+    "OneVariableDeclarationPerLine" : true,
+    "OrderedImports" : true,
+    "UseShorthandTypeNames" : true
+  },
+  "tabWidth" : 4,
+  "version" : 1
+}

@@ -1,0 +1,15 @@
+# Generated, test, and resource files are not production code.
+(^|/)\.build/
+(^|/)Tests/
+(^|/)Resources/
+
+# Executable composition roots contain wiring only.
+(^|/)Sources/(VideoTagging|FolderPicker)/main\.swift$
+
+# Thin macOS adapters require UI, hardware, applications, or system permissions.
+(^|/)Sources/FolderPickerCore/UI/(FolderCellView|FolderPickerAccessoryView|FolderPickerActions|FolderPickerController|PlaybackResumeControls|ViewedCriteriaControls)\.swift$
+(^|/)Sources/VideoTaggingCore/Audio/AudioOutputDevices\.swift$
+(^|/)Sources/VideoTaggingCore/Configuration/ConfigurationLoader\.swift$
+(^|/)Sources/VideoTaggingCore/Playback/(AppleScriptPlaybackClient|PlayerMonitorDependencies)\.swift$
+(^|/)Sources/VideoTaggingCore/Tagging/TagManager\.swift$
+(^|/)Sources/VideoTaggingCore/Watching/FolderWatcher\.swift$
