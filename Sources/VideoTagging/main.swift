@@ -19,15 +19,34 @@ enum ManagedTag: String, CaseIterable {
 }
 
 struct PlaybackItem {
+    let player: Player
     let url: URL
     let currentTime: Double
     let duration: Double
+    let isPlaying: Bool
+}
+
+enum Player: Equatable {
+    case vlc
+    case quickTime
+}
+
+struct PlaybackResumeConfiguration: Codable {
+    let targetOutput: ConfiguredAudioOutput
+    let headphonesOutput: ConfiguredAudioOutput
+    let rewindSeconds: Double
+}
+
+struct ConfiguredAudioOutput: Codable {
+    let uid: String
+    let name: String
 }
 
 struct Configuration: Codable {
     let observedFolders: [String]
     let viewedAtPercentage: Double?
     let viewedSecondsBeforeEnd: Double?
+    let playbackResume: PlaybackResumeConfiguration?
 
     static func load() -> Configuration {
         let homeDirectory = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
@@ -47,7 +66,8 @@ struct Configuration: Codable {
                 }
                 .map(\.path),
                 viewedAtPercentage: 85,
-                viewedSecondsBeforeEnd: nil
+                viewedSecondsBeforeEnd: nil,
+                playbackResume: nil
             )
         }
 
@@ -67,14 +87,16 @@ struct Configuration: Codable {
                 }
                 .map(\.path),
                 viewedAtPercentage: configuration.viewedAtPercentage ?? 85,
-                viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+                viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd,
+                playbackResume: configuration.playbackResume
             )
         }
 
         return Configuration(
             observedFolders: uniqueFolders.map(\.path),
             viewedAtPercentage: configuration.viewedAtPercentage ?? 85,
-            viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+            viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd,
+            playbackResume: configuration.playbackResume
         )
     }
 }
@@ -85,16 +107,19 @@ let observedFolders = configuration.observedFolders.map {
 }
 let tagManager = TagManager()
 let watcher = FolderWatcher(roots: observedFolders, tagManager: tagManager)
-nonisolated(unsafe) let playerMonitor = PlayerMonitor(
+let playerMonitor = PlayerMonitor(
     tagManager: tagManager,
     roots: observedFolders,
     viewedAtPercentage: configuration.viewedAtPercentage,
-    viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd
+    viewedSecondsBeforeEnd: configuration.viewedSecondsBeforeEnd,
+    playbackResume: configuration.playbackResume
 )
 
 watcher.start()
 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-    playerMonitor.poll()
+    Task { @MainActor in
+        playerMonitor.poll()
+    }
 }
 
 print("Video tagging is watching \(observedFolders.map(\.path).joined(separator: ", ")).")
