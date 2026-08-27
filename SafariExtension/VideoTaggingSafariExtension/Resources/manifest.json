@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Finder Video Tagging",
+  "version": "1.0.0",
+  "description": "Coordinates Safari media playback with Finder Video Tagging.",
+  "permissions": ["nativeMessaging"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background-entry.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content-bootstrap.js"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content-entry.js", "ids.js", "media-controller.js"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
+}

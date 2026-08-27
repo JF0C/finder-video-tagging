@@ -31,17 +31,20 @@ public struct Configuration: Codable, Equatable, Sendable {
     public let viewedAtPercentage: Double?
     public let viewedSecondsBeforeEnd: Double?
     public let playbackResume: PlaybackResumeConfiguration?
+    public let browserPlaybackResumeEnabled: Bool?
 
     public init(
         observedFolders: [String],
         viewedAtPercentage: Double?,
         viewedSecondsBeforeEnd: Double?,
-        playbackResume: PlaybackResumeConfiguration?
+        playbackResume: PlaybackResumeConfiguration?,
+        browserPlaybackResumeEnabled: Bool? = false
     ) {
         self.observedFolders = observedFolders
         self.viewedAtPercentage = viewedAtPercentage
         self.viewedSecondsBeforeEnd = viewedSecondsBeforeEnd
         self.playbackResume = playbackResume
+        self.browserPlaybackResumeEnabled = browserPlaybackResumeEnabled
     }
 
     public static func resolve(
@@ -59,7 +62,8 @@ public struct Configuration: Codable, Equatable, Sendable {
                 observedFolders: availableDefaults,
                 viewedAtPercentage: 85,
                 viewedSecondsBeforeEnd: nil,
-                playbackResume: nil
+                playbackResume: nil,
+                browserPlaybackResumeEnabled: false
             )
         }
 
@@ -74,7 +78,8 @@ public struct Configuration: Codable, Equatable, Sendable {
             observedFolders: folders.isEmpty ? availableDefaults : folders,
             viewedAtPercentage: decoded.viewedAtPercentage ?? 85,
             viewedSecondsBeforeEnd: decoded.viewedSecondsBeforeEnd,
-            playbackResume: decoded.playbackResume
+            playbackResume: decoded.playbackResume,
+            browserPlaybackResumeEnabled: decoded.browserPlaybackResumeEnabled ?? false
         )
     }
 }
