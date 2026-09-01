@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:browser-extension": "node --test BrowserExtension/tests/*.test.js",
+    "package:browser-extension": "node BrowserExtension/package.mjs"
+  }
+}

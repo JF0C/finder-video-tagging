@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Finder Video Tagging",
+  "version": "1.0.0",
+  "description": "Coordinates browser media playback with Finder Video Tagging.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAs/GhgUTk76LazCd1+tY5MaFdH/79gs78rgVh4z1S9TP3OaU0Nx80wkUN4QMdBMhaN3cl/9dJJD01bJVZxN8qVE33M74tABvy0eKB9jSamCYxVdNhlKN8RBAzsqgULBGwl/QfjO4Gxw8/3QPIEQN5RX4PLX7Xbqbh6lnyMZ+75xD/8xdVmTsAl0Mg7zEppONOoB0F4kGv3Ub2wHZl248EIFeBatY3zvwEpAFIC5ZY1dhWhjmpz2VkO5wjm/fWvSIWzqZH2CYaFZkv9O/EWX+slsGI01IqzCSA13ZnRBEXnMEqrInSEtWbEpFPLpZh0LSmsDphceQUokpwbL8Tvtfv9QIDAQAB",
+  "permissions": ["nativeMessaging"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background-entry.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content-bootstrap.js"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true,
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content-entry.js", "ids.js", "media-controller.js"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
+}

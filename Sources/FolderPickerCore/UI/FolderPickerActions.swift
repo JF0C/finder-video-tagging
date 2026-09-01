@@ -69,6 +69,8 @@ extension FolderPickerController {
         targetOutputPopup.isEnabled = resumeEnabled
         headphonesOutputPopup.isEnabled = resumeEnabled
         rewindSecondsField.isEnabled = resumeEnabled
+        browserPlaybackResumeCheckbox.isEnabled = resumeEnabled
+        if !resumeEnabled { browserPlaybackResumeCheckbox.state = .off }
         continueButton?.isEnabled = validation().canContinue
     }
 

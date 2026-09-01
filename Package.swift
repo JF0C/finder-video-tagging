@@ -26,6 +26,10 @@ let package = Package(
             name: "FolderPicker",
             dependencies: ["FolderPickerCore"]
         ),
+        .executableTarget(
+            name: "BrowserNativeBridge",
+            dependencies: ["VideoTaggingCore"]
+        ),
         .testTarget(
             name: "VideoTaggingCoreTests",
             dependencies: ["VideoTaggingCore"]

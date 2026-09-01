@@ -17,6 +17,8 @@ public final class FolderPickerController: NSObject, NSTableViewDataSource, NSTa
     let secondsField = NSTextField()
     let playbackResumeCheckbox = NSButton(
         checkboxWithTitle: "Resume video when AirPods are removed", target: nil, action: nil)
+    let browserPlaybackResumeCheckbox = NSButton(
+        checkboxWithTitle: "Include Firefox, Chrome, and Safari media", target: nil, action: nil)
     let targetOutputPopup = NSPopUpButton()
     let headphonesOutputPopup = NSPopUpButton()
     let rewindSecondsField = NSTextField()
@@ -44,7 +46,8 @@ public final class FolderPickerController: NSObject, NSTableViewDataSource, NSTa
             viewedAtPercentage: percentageCheckbox.state == .on
                 ? percentageField.doubleValue : nil,
             viewedSecondsBeforeEnd: secondsCheckbox.state == .on ? secondsField.doubleValue : nil,
-            playbackResume: selectedPlaybackResumeConfiguration()
+            playbackResume: selectedPlaybackResumeConfiguration(),
+            browserPlaybackResumeEnabled: browserPlaybackResumeCheckbox.state == .on
         )
     }
 

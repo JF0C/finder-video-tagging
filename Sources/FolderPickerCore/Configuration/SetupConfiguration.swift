@@ -5,17 +5,20 @@ public struct SetupConfiguration: Codable, Equatable, Sendable {
     public let viewedAtPercentage: Double?
     public let viewedSecondsBeforeEnd: Double?
     public let playbackResume: SetupPlaybackResumeConfiguration?
+    public let browserPlaybackResumeEnabled: Bool
 
     public init(
         observedFolders: [String],
         viewedAtPercentage: Double?,
         viewedSecondsBeforeEnd: Double?,
-        playbackResume: SetupPlaybackResumeConfiguration?
+        playbackResume: SetupPlaybackResumeConfiguration?,
+        browserPlaybackResumeEnabled: Bool = false
     ) {
         self.observedFolders = observedFolders
         self.viewedAtPercentage = viewedAtPercentage
         self.viewedSecondsBeforeEnd = viewedSecondsBeforeEnd
         self.playbackResume = playbackResume
+        self.browserPlaybackResumeEnabled = browserPlaybackResumeEnabled
     }
 }
 

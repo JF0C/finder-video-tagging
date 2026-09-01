@@ -73,12 +73,15 @@ Scripts/check-coverage.sh
 ```
 
 For changes affecting packaging or setup, also run `swift build -c release` and confirm
-`.build/release/VideoTagging` and `.build/release/FolderPicker` still exist. Do not run the folder
-picker in unattended automation because it opens a modal UI.
+`.build/release/VideoTagging`, `.build/release/FolderPicker`, and
+`.build/release/BrowserNativeBridge` still exist. Do not run the folder picker in unattended
+automation because it opens a modal UI.
 
 ## Change Discipline
 
 - Keep changes focused and preserve existing user-visible behavior unless the request says otherwise.
+- Document and read implementation plans in the relevant GitHub issue; do not commit planning
+  documents to this repository.
 - Do not edit generated files under `.build`.
 - Do not commit user configuration, logs, or machine-specific paths.
 - Work with existing uncommitted changes and never discard them without explicit approval.

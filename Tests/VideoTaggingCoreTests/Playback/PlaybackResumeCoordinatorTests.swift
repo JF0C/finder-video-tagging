@@ -18,7 +18,40 @@ final class PlaybackResumeCoordinatorTests: XCTestCase {
         XCTAssertEqual(
             coordinator.outputChanged(
                 to: "speakers", items: [], configuration: configuration),
-            .restore(targetUID: "tv", items: [playing], rewindSeconds: 5))
+            .restore(
+                targetUID: "tv",
+                localItems: [playing],
+                browserSessions: [],
+                rewindSeconds: 5
+            ))
+    }
+
+    func testRouteRoundTripCapturesOnlyPlayingBrowserSessions() {
+        var coordinator = PlaybackResumeCoordinator()
+        let playing = browserSnapshot(sessionID: "playing", isPlaying: true)
+        let paused = browserSnapshot(sessionID: "paused", isPlaying: false)
+        _ = coordinator.outputChanged(to: "tv", items: [], configuration: resumeConfiguration())
+        _ = coordinator.outputChanged(
+            to: "pods",
+            items: [],
+            browserMedia: [playing, paused],
+            configuration: resumeConfiguration()
+        )
+
+        XCTAssertEqual(
+            coordinator.outputChanged(
+                to: "speakers", items: [], configuration: resumeConfiguration()),
+            .restore(
+                targetUID: "tv",
+                localItems: [],
+                browserSessions: [playing.identity],
+                rewindSeconds: 5
+            ))
+        XCTAssertEqual(
+            coordinator.outputChanged(
+                to: "tv", items: [], configuration: resumeConfiguration()),
+            .none
+        )
     }
 
     func testUnrelatedRouteChangesDoNothing() {
@@ -47,6 +80,20 @@ final class PlaybackResumeCoordinatorTests: XCTestCase {
             url: URL(fileURLWithPath: path),
             currentTime: 20,
             duration: 100,
+            isPlaying: isPlaying
+        )
+    }
+
+    private func browserSnapshot(sessionID: String, isPlaying: Bool) -> BrowserMediaSnapshot {
+        BrowserMediaSnapshot(
+            identity: BrowserMediaIdentity(
+                browser: .firefox,
+                connectionID: "connection",
+                tabID: 1,
+                frameID: 0,
+                documentID: "document",
+                sessionID: sessionID
+            ),
             isPlaying: isPlaying
         )
     }

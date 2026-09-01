@@ -33,6 +33,11 @@ extension FolderPickerController {
         rewindSecondsField.action = #selector(playbackResumeChanged)
         view.addSubview(rewindSecondsField)
         addSuffix("s", frame: NSRect(x: 268, y: 55, width: 16, height: 20), to: view)
+
+        browserPlaybackResumeCheckbox.frame = NSRect(x: 20, y: 16, width: 360, height: 24)
+        browserPlaybackResumeCheckbox.target = self
+        browserPlaybackResumeCheckbox.action = #selector(playbackResumeChanged)
+        view.addSubview(browserPlaybackResumeCheckbox)
     }
 
     private func addOutputControl(

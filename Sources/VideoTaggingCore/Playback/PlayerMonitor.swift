@@ -6,6 +6,7 @@ public final class PlayerMonitor {
     private let viewedAtPercentage: Double?
     private let viewedSecondsBeforeEnd: Double?
     private let playbackResume: PlaybackResumeConfiguration?
+    private let browserPlaybackClient: BrowserPlaybackClient?
     private let dependencies: PlayerMonitorDependencies
     private var resumeCoordinator = PlaybackResumeCoordinator()
 
@@ -14,12 +15,14 @@ public final class PlayerMonitor {
         roots: [URL],
         viewedAtPercentage: Double?,
         viewedSecondsBeforeEnd: Double?,
-        playbackResume: PlaybackResumeConfiguration?
+        playbackResume: PlaybackResumeConfiguration?,
+        browserPlaybackClient: BrowserPlaybackClient? = nil
     ) {
         self.roots = roots.map(\.standardizedFileURL)
         self.viewedAtPercentage = viewedAtPercentage
         self.viewedSecondsBeforeEnd = viewedSecondsBeforeEnd
         self.playbackResume = playbackResume
+        self.browserPlaybackClient = browserPlaybackClient
         self.dependencies = .live(tagManager: tagManager)
     }
 
@@ -28,12 +31,14 @@ public final class PlayerMonitor {
         viewedAtPercentage: Double?,
         viewedSecondsBeforeEnd: Double?,
         playbackResume: PlaybackResumeConfiguration?,
-        dependencies: PlayerMonitorDependencies
+        dependencies: PlayerMonitorDependencies,
+        browserPlaybackClient: BrowserPlaybackClient? = nil
     ) {
         self.roots = roots.map(\.standardizedFileURL)
         self.viewedAtPercentage = viewedAtPercentage
         self.viewedSecondsBeforeEnd = viewedSecondsBeforeEnd
         self.playbackResume = playbackResume
+        self.browserPlaybackClient = browserPlaybackClient
         self.dependencies = dependencies
     }
 
@@ -58,13 +63,19 @@ public final class PlayerMonitor {
         let action = resumeCoordinator.outputChanged(
             to: output.uid,
             items: items,
+            browserMedia: browserPlaybackClient?.freshSnapshots() ?? [],
             configuration: playbackResume
         )
-        guard case let .restore(targetUID, pendingItems, rewindSeconds) = action else { return }
+        guard case let .restore(targetUID, pendingItems, browserSessions, rewindSeconds) = action
+        else { return }
         do {
             try dependencies.setCurrentOutput(targetUID)
             dependencies.scheduleResume { [weak self] in
                 self?.resume(pendingItems, rewindSeconds: rewindSeconds)
+                self?.browserPlaybackClient?.resume(
+                    browserSessions,
+                    rewindSeconds: rewindSeconds
+                )
             }
         } catch {
             dependencies.reportError("Could not restore audio output: \(error)")
